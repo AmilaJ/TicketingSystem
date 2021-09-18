@@ -5,10 +5,7 @@ import java.time.LocalDate;
 import com.amila.ticket.exceptions.TicketPlatformException;
 
 public interface Reservation {
-	
-	void getJourneyPrice(int noOfSeats, Location start, Location destination);
-	
-	void reserveSeats(int noOfSeats, Location start, Location destination);
+
 
 	void setPrice(String price);
 

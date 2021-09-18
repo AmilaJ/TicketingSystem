@@ -34,18 +34,6 @@ public class BusReservation implements Reservation {
 	private String reaservationId;
 
 	@Override
-	public void getJourneyPrice(int noOfSeats, Location start, Location destination) {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public void reserveSeats(int noOfSeats, Location start, Location destination) {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
 	public void setPrice(String price) {
 		this.price = price;
 	}
@@ -110,7 +98,7 @@ public class BusReservation implements Reservation {
 	public boolean isReservationValid() throws TicketPlatformException {
 		boolean valid = false;
 		if (this.date != null && this.date.isAfter(LocalDate.now().minusDays(1))) {
-			if (this.noOfSeats > 0 && this.noOfSeats <= DataHolder.MaxSeatingCapacity) {
+			if (this.noOfSeats > 0 && this.noOfSeats <= DataHolder.MAX_SEATING_CAPACITY) {
 				List<Location> Locations = Arrays.asList(Location.values());
 				if (this.start != null && Locations.contains(this.start)) {
 					if (this.destination != null && Locations.contains(this.destination)) {

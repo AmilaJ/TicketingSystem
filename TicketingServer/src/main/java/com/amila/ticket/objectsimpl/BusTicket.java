@@ -9,7 +9,7 @@ public class BusTicket implements Ticket {
 	private Location start;
 	private Location destination;
 
-	BusTicket(String reservationId,Location start, Location destination) {
+	public BusTicket(String reservationId,Location start, Location destination) {
 		this.reservationId = reservationId;
 		this.start = start;
 		this.destination = destination;

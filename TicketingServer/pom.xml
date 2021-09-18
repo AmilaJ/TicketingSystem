@@ -10,7 +10,7 @@
 
 	<packaging>war</packaging>
 	<build>
-		<finalName>ticket-service</finalName>
+		<finalName>ticket-rest-service</finalName>
 		<pluginManagement>
 			<plugins>
 				<plugin>

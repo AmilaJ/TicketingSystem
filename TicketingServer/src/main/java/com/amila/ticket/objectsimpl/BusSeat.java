@@ -13,6 +13,19 @@ import com.amila.ticket.objects.Ticket;
 public class BusSeat implements Seat {
 
 	List<Ticket> tickets = null;
+	private String seatId = null;
+
+	private BusSeat() {
+	}
+
+	public BusSeat(String seatId) {
+		this.seatId = seatId;
+	}
+	
+	@Override
+	public String getSeatId() {
+		return this.seatId;
+	}
 
 	@Override
 	public boolean checkAvailability(Location start, Location destination, Direction direction) {
@@ -22,7 +35,7 @@ public class BusSeat implements Seat {
 		} else {
 			if (tickets.stream().anyMatch(ticket -> !isSeatAvailable(ticket, start, destination, direction))) {
 				available = false;
-			}else {
+			} else {
 				available = true;
 			}
 		}
@@ -30,20 +43,12 @@ public class BusSeat implements Seat {
 	}
 
 	@Override
-	public String getSeatId() {
-		return null;
-	}
-
-	@Override
-	public void setSeatId(String seatId) {
-	}
-
-	@Override
-	public void issueTicketForSeat(Ticket ticket) {
+	synchronized public String issueTicketForSeat(Ticket ticket) {
 		if (tickets == null) {
 			tickets = new ArrayList<>();
 		}
 		tickets.add(ticket);
+		return this.getSeatId();
 	}
 
 	private boolean isSeatAvailable(Ticket ticket, Location start, Location destination, Direction direction) {
@@ -58,10 +63,12 @@ public class BusSeat implements Seat {
 			Collections.reverse(locationRange);
 		}
 		if (locationRange != null) {
-			if((locationRange.contains(ticket.getStart()) && locationRange.indexOf(ticket.getStart())!=locationRange.size()-1)||
-					(locationRange.contains(ticket.getDestination()) && locationRange.indexOf(ticket.getDestination())!=0)){
+			if ((locationRange.contains(ticket.getStart())
+					&& locationRange.indexOf(ticket.getStart()) != locationRange.size() - 1)
+					|| (locationRange.contains(ticket.getDestination())
+							&& locationRange.indexOf(ticket.getDestination()) != 0)) {
 				available = false;
-			}else {
+			} else {
 				available = true;
 			}
 		}

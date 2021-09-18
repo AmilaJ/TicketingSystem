@@ -8,5 +8,7 @@ public interface TripInformation {
 
 	Trip getTrip(LocalDate date, Direction direction) throws TicketPlatformException;
 
-	void addTrip(Trip trip, LocalDate date) throws TicketPlatformException;
+	void updateTrip(LocalDate date, Direction direction, Trip tripOnDay) throws TicketPlatformException;
+
+	void addTrip(LocalDate date, Trip trip) throws TicketPlatformException;
 }

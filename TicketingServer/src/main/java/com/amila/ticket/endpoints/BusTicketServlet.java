@@ -1,8 +1,6 @@
 package com.amila.ticket.endpoints;
 
 import java.io.IOException;
-import java.time.LocalDate;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.servlet.ServletException;
@@ -11,13 +9,12 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.amila.ticket.common.Common;
-import com.amila.ticket.common.LocalDateDeserializer;
-import com.amila.ticket.common.LocalDateSerializer;
-import com.amila.ticket.controller.ReservationManager;
+import com.amila.ticket.controller.BusTicketReservationManager;
 import com.amila.ticket.exceptions.TicketPlatformException;
-import com.amila.ticket.objectsimpl.BusReservation;
+import com.amila.ticket.objects.ReservationManager;
 import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
+import com.google.gson.JsonIOException;
+import com.google.gson.JsonSyntaxException;
 
 public class BusTicketServlet extends HttpServlet {
 
@@ -26,116 +23,52 @@ public class BusTicketServlet extends HttpServlet {
 
 	@Override
 	public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
+		LOG.info("Inside doPost");
 		String jsonresponse = null;
-		GsonBuilder gsonBuilder = new GsonBuilder();
-		gsonBuilder.registerTypeAdapter(LocalDate.class, new LocalDateSerializer());
-		gsonBuilder.registerTypeAdapter(LocalDate.class, new LocalDateDeserializer());
-		Gson gson = gsonBuilder.setPrettyPrinting().create();
+		Gson gson = Common.getGsonObject();
 		try {
-
-			String requestUrl = request.getRequestURI();
-			if (requestUrl != null && !requestUrl.isEmpty()) {
-				String msg = "Invoking URL\t:" + requestUrl;
-				LOG.log(Level.INFO, msg);
-				String context[] = requestUrl.split("/");
-				if (context.length == 4 && context[3].equals("reservation")) {
-					BusReservation reservationRequest = null;
-					try {
-						reservationRequest = gson.fromJson(request.getReader(), BusReservation.class);
-					} catch (Exception e) {
-						throw new TicketPlatformException("Error occured while trying to process the request, Please validate the request");
-					}
-					if (reservationRequest != null) {
-						ReservationManager reservationManager = new ReservationManager();
-						if (reservationRequest.isReservationValid()) {
-							if (reservationManager.isReservationAvailabile(reservationRequest)) {
-								BusReservation reservationResponse = reservationManager
-										.getReservationInformation(reservationRequest);
-								jsonresponse = gson.toJson(reservationResponse);
-							} else {
-								jsonresponse = gson.toJson(Common.generateError("Reservation Cannot Be Fulfilled",
-										"Seats are Not available for the requested journey"));
-							}
-						} else {
-							jsonresponse = gson.toJson(Common.generateError("Reservation Cannot Be Fulfilled",
-									"Seats are Not available for the requested journey"));
-						}
-					} else {
-						jsonresponse = gson
-								.toJson(Common.generateError("Incorrect Request", "Please validate the request"));
-						response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-					}
-				} else {
-					jsonresponse = gson
-							.toJson(Common.generateError("Incorrect Request", "Please validate the request path"));
-					response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-				}
-			} else {
-				jsonresponse = gson.toJson(Common.generateError("Incorrect Request", "Please validate the request path"));
-				response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-			}
+			ReservationManager reservationManager = new BusTicketReservationManager();
+			jsonresponse = reservationManager.getReservationInformation(request);
+		} catch (JsonIOException e) {
+			LOG.severe(e.getMessage());
+			jsonresponse = gson.toJson(Common.generateError(Common.ERROR_OCCURED_WHILE_PROCESSING_REQUEST,
+					Common.PLEASE_VALIDATE_REQUEST));
+			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+		} catch (JsonSyntaxException e) {
+			LOG.severe(e.getMessage());
+			jsonresponse = gson.toJson(Common.generateError(Common.ERROR_OCCURED_WHILE_PROCESSING_REQUEST,
+					Common.PLEASE_VALIDATE_REQUEST));
+			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
 		} catch (TicketPlatformException e) {
-			jsonresponse = gson.toJson(Common.generateError("Error Occured", e.getMessage()));
+			jsonresponse = gson.toJson(Common.generateError(Common.ERROR_OCCURED_WHILE_PROCESSING, e.getMessage()));
 			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
 		}
 		response.getOutputStream().println(jsonresponse);
 	}
-
+	
 	@Override
 	public void doPut(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
-
+		LOG.info("Inside doPut");
 		String jsonresponse = null;
-		GsonBuilder gsonBuilder = new GsonBuilder();
-		gsonBuilder.registerTypeAdapter(LocalDate.class, new LocalDateSerializer());
-		gsonBuilder.registerTypeAdapter(LocalDate.class, new LocalDateDeserializer());
-		Gson gson = gsonBuilder.setPrettyPrinting().create();
+		Gson gson = Common.getGsonObject();
 		try {
-
-			String requestUrl = request.getRequestURI();
-			if (requestUrl != null && !requestUrl.isEmpty()) {
-				String msg = "Invoking URL\t:" + requestUrl;
-				LOG.log(Level.INFO, msg);
-				String context[] = requestUrl.split("/");
-				if (context.length == 4 && context[3].equals("reservation")) {
-					BusReservation reservationRequest = null;
-					try {
-						reservationRequest = gson.fromJson(request.getReader(), BusReservation.class);
-					} catch (Exception e) {
-						throw new TicketPlatformException("Error occured while trying to process the request, Please validate the request");
-					}
-					if (reservationRequest != null) {
-						ReservationManager reservationManager = new ReservationManager();
-						if (reservationRequest.isReservationValid()) {
-							if (reservationManager.isReservationAvailabile(reservationRequest)) {
-								BusReservation reservationResponse = reservationManager
-										.doReservation(reservationRequest);
-								jsonresponse = gson.toJson(reservationResponse);
-							} else {
-								jsonresponse = gson.toJson(Common.generateError("Reservation Cannot Be Fulfilled",
-										"Seats are Not available for the requested journey"));
-							}
-						} else {
-							jsonresponse = gson.toJson(Common.generateError("Reservation Cannot Be Fulfilled",
-									"Seats are Not available for the requested journey"));
-						}
-					} else {
-						jsonresponse = gson
-								.toJson(Common.generateError("Incorrect Request", "Please validate the request"));
-						response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-					}
-				} else {
-					jsonresponse = gson
-							.toJson(Common.generateError("Incorrect Request", "Please validate the request path"));
-					response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-				}
-			} else {
-				jsonresponse = gson.toJson(Common.generateError("Incorrect Request", "Please validate the request path"));
-				response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-			}
+			ReservationManager reservationManager = new BusTicketReservationManager();
+			jsonresponse = reservationManager.doReservation(request);
+		} catch (JsonIOException e) {
+			LOG.severe(e.getMessage());
+			jsonresponse = gson.toJson(Common.generateError(Common.ERROR_OCCURED_WHILE_PROCESSING_REQUEST,
+					Common.PLEASE_VALIDATE_REQUEST));
+			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+		} catch (JsonSyntaxException e) {
+			LOG.severe(e.getMessage());
+			jsonresponse = gson.toJson(Common.generateError(Common.ERROR_OCCURED_WHILE_PROCESSING_REQUEST,
+					Common.PLEASE_VALIDATE_REQUEST));
+			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
 		} catch (TicketPlatformException e) {
-			jsonresponse = gson.toJson(Common.generateError("Error Occured", e.getMessage()));
+			jsonresponse = gson.toJson(Common.generateError(Common.ERROR_OCCURED_WHILE_PROCESSING, e.getMessage()));
 			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
 		}
 		response.getOutputStream().println(jsonresponse);
 	}
+
 }

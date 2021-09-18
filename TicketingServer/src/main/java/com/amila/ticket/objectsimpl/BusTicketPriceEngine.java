@@ -15,6 +15,7 @@ public class BusTicketPriceEngine implements PriceEngine {
 	int unitprice;
 
 	public String calculatePrice(int noOfSeats, Location start, Location destination) {
+		LOG.log(Level.INFO, "Price Engine Claculating Price");
 		unitprice = 0;
 		DataHolder.busticketPriceList.forEach((locations, price) -> {
 			if (locations != null && locations.length == 2
@@ -25,9 +26,9 @@ public class BusTicketPriceEngine implements PriceEngine {
 			}
 		});
 		int totalPrice = unitprice * noOfSeats;
-		LOG.log(Level.INFO, "TotalPrice:"+totalPrice);
 		NumberFormat formatter = NumberFormat.getCurrencyInstance(new Locale("en", "LK"));
 		String priceString = formatter.format(totalPrice);
+		LOG.log(Level.INFO, "Price Engine Responding Price");
 		return priceString;
 	}
 

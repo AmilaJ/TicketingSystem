@@ -2,8 +2,7 @@ package com.amila.ticket.objectsimpl;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.Map;
-import java.util.TreeMap;
+import java.util.logging.Logger;
 
 import com.amila.ticket.exceptions.TicketPlatformException;
 import com.amila.ticket.objects.Direction;
@@ -13,8 +12,11 @@ import com.amila.ticket.objectsdata.DataHolder;
 
 public class BusTripInformation implements TripInformation {
 
+	private final static Logger LOG = Logger.getLogger(BusTripInformation.class.getName());
+	
 	@Override
 	public Trip getTrip(LocalDate date, Direction direction) throws TicketPlatformException {
+		LOG.info("Requesting Trip information for Date Direction");
 		Trip trip = null;
 		try {
 			ArrayList<Trip> tripsOnDay = DataHolder.trips.get(date);
@@ -28,11 +30,13 @@ public class BusTripInformation implements TripInformation {
 		} catch (IllegalStateException e) {
 			throw new TicketPlatformException("Trip count exceeded incorrect information exists");
 		}
+		LOG.info("Responding Trip information for Date Direction");
 		return trip;
 	}
 
 	@Override
-	public void addTrip(Trip trip, LocalDate date) throws TicketPlatformException {
+	synchronized public void addTrip( LocalDate date, Trip trip) throws TicketPlatformException {
+		LOG.info("Adding new Trip information Record");
 		if (DataHolder.trips.containsKey(date)) {
 			ArrayList<Trip> tripsOnDay = DataHolder.trips.get(date);
 			if (tripsOnDay.stream().anyMatch(TripElement -> TripElement.getDirection().equals(trip.getDirection()))) {
@@ -46,9 +50,12 @@ public class BusTripInformation implements TripInformation {
 			tripsOnDay.add(trip);
 			DataHolder.trips.put(date, tripsOnDay);
 		}
+		LOG.info("Adding new Trip information Record Completed");
 	}
 
-	public void updateTrip(LocalDate date, Direction direction, Trip tripOnDay) throws TicketPlatformException {
+	@Override
+	synchronized public void updateTrip(LocalDate date, Direction direction, Trip tripOnDay) throws TicketPlatformException {
+		LOG.info("Updating new Trip information Record");
 		ArrayList<Trip> tripsOnDay = DataHolder.trips.get(date);
 		int index = 0;
 		boolean exists = false;
@@ -64,6 +71,7 @@ public class BusTripInformation implements TripInformation {
 		} else {
 			throw new TicketPlatformException("Trying to update non existent Trip Information");
 		}
+		LOG.info("Updating new Trip information Record Completed");
 	}
 
 }

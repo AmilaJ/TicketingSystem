@@ -4,7 +4,7 @@ public interface Trip {
 
 	boolean isReservationPossible(Reservation reservation);
 
-	void makeReservation(Reservation reservation);
+	String makeReservation(Reservation reservation);
 
 	Direction getDirection();
 
