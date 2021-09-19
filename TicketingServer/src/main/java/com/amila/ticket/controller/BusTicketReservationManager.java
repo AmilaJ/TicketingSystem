@@ -8,6 +8,7 @@ import javax.servlet.http.HttpServletRequest;
 import com.amila.ticket.common.Common;
 import com.amila.ticket.exceptions.TicketPlatformException;
 import com.amila.ticket.objects.Direction;
+import com.amila.ticket.objects.Location;
 import com.amila.ticket.objects.Reservation;
 import com.amila.ticket.objects.ReservationManager;
 import com.amila.ticket.objects.Trip;
@@ -87,6 +88,7 @@ public class BusTicketReservationManager implements ReservationManager {
 			String totalPrice = new BusTicketPriceEngine().calculatePrice(reservation.getNoOfSeats(),
 					reservation.getStart(), reservation.getDestination());
 			reservation.setPrice(totalPrice);
+			reservation.setDuration(Common.getDepartureArrival(reservation.getStart(), reservation.getDestination()));
 			reservation.setStatus("Seats are available for Reservation");
 			jsonresponse = gson.toJson(reservation);
 		} else {
@@ -119,6 +121,7 @@ public class BusTicketReservationManager implements ReservationManager {
 			String totalPrice = new BusTicketPriceEngine().calculatePrice(reservation.getNoOfSeats(),
 					reservation.getStart(), reservation.getDestination());
 			reservation.setPrice(totalPrice);
+			reservation.setDuration(Common.getDepartureArrival(reservation.getStart(), reservation.getDestination()));
 			reservation.setStatus("Seats "+reservedSeats+" are allocated for Reservation");
 			jsonresponse = gson.toJson(reservation);
 		} else {
@@ -137,5 +140,6 @@ public class BusTicketReservationManager implements ReservationManager {
 		stringBuilder.append(Common.getRandomFourDigits());
 		return stringBuilder.toString();
 	}
+	
 
 }

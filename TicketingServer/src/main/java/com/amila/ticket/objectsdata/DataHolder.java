@@ -1,12 +1,14 @@
 package com.amila.ticket.objectsdata;
 
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
+import com.amila.ticket.objects.Direction;
 import com.amila.ticket.objects.Location;
 import com.amila.ticket.objects.Trip;
 
@@ -15,6 +17,8 @@ public class DataHolder {
 	public static volatile Map<LocalDate, ArrayList<Trip>> trips = new TreeMap<>();
 
 	public static Map<Location[], Integer> busticketPriceList = new HashMap<>();
+	
+	public static Map<Direction, Map<Location, LocalTime>> locationTimeList = new HashMap<>();
 
 	public static final Location[] Locationlist = Location.values();
 
@@ -45,7 +49,20 @@ public class DataHolder {
 				seatingIds.add(String.valueOf(seatIdNumber) + String.valueOf(seatIdChar));
 			}
 		}
-
+		
+		Map<Location, LocalTime> A_TO_D_map=new HashMap<Location, LocalTime>();
+		A_TO_D_map.put(Location.A, LocalTime.parse("09:00"));
+		A_TO_D_map.put(Location.B, LocalTime.parse("10:00"));
+		A_TO_D_map.put(Location.C, LocalTime.parse("11:00"));
+		A_TO_D_map.put(Location.D, LocalTime.parse("12:00"));
+		Map<Location, LocalTime> D_TO_A_map=new HashMap<Location, LocalTime>();
+		D_TO_A_map.put(Location.A, LocalTime.parse("16:00"));
+		D_TO_A_map.put(Location.B, LocalTime.parse("15:00"));
+		D_TO_A_map.put(Location.C, LocalTime.parse("14:00"));
+		D_TO_A_map.put(Location.D, LocalTime.parse("13:00"));
+		locationTimeList.put(Direction.A_TO_D, A_TO_D_map);
+		locationTimeList.put(Direction.D_TO_A, D_TO_A_map);
+	
 	}
 
 	private DataHolder() {

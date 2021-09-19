@@ -63,5 +63,11 @@ class CommonTest {
 				"Checking GSON Object Creation providing not null object");
 	}
 	
-	
+	@Test
+	@DisplayName("Checking Departure Arrival String")
+	void getDepartureArrivalTest() {
+
+		assertEquals("Departure at 09:00 AM -- Arrival at 11:00 AM", Common.getDepartureArrival(Location.A, Location.C),
+				"Check The Departure Arrival String for Locations A to C");
+	}
 }

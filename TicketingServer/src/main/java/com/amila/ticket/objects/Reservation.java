@@ -33,4 +33,8 @@ public interface Reservation {
 
 	void setReaservationId(String reaservationId);
 
+	String getDuration();
+
+	void setDuration(String duration);
+
 }

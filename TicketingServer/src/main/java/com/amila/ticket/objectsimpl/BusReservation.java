@@ -33,6 +33,9 @@ public class BusReservation implements Reservation {
 	@Expose(serialize = true, deserialize = false)
 	private String reaservationId;
 
+	@Expose(serialize = true, deserialize = false)
+	private String duration;
+
 	@Override
 	public void setPrice(String price) {
 		this.price = price;
@@ -93,6 +96,15 @@ public class BusReservation implements Reservation {
 		this.reaservationId = reaservationId;
 	}
 	
+	@Override
+	public String getDuration() {
+		return duration;
+	}
+
+	@Override
+	public void setDuration(String duration) {
+		this.duration = duration;
+	}
 	
 	@Override
 	public boolean isReservationValid() throws TicketPlatformException {
@@ -121,6 +133,8 @@ public class BusReservation implements Reservation {
 		}
 		return valid;
 	}
+
+	
 
 
 

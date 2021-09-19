@@ -1,6 +1,9 @@
 package com.amila.ticket.common;
 
 import java.time.LocalDate;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
+import java.util.Map;
 import java.util.Random;
 
 import com.amila.ticket.objects.Direction;
@@ -44,6 +47,20 @@ public class Common {
 			}
 		}
 		return direction;
+	}
+	
+	public static String getDepartureArrival(Location start, Location destination) {
+		StringBuilder stringBuilder = new StringBuilder();
+		Direction direction = getDirection(start, destination);
+		Map<Location, LocalTime> timeList = DataHolder.locationTimeList.get(direction);
+		LocalTime startTime=timeList.get(start);
+		LocalTime destinationTime=timeList.get(destination);
+		stringBuilder.append("Departure at ");
+		stringBuilder.append(DateTimeFormatter.ofPattern("hh:mm a").format(startTime));
+		stringBuilder.append(" -- ");
+		stringBuilder.append("Arrival at ");
+		stringBuilder.append(DateTimeFormatter.ofPattern("hh:mm a").format(destinationTime));
+		return stringBuilder.toString();
 	}
 
 	private Common() {
